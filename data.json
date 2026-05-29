@@ -20,21 +20,6 @@
             "date": "2026-05-29",
             "hours": 2,
             "type": "absent"
-          },
-          {
-            "date": "2026-05-29",
-            "hours": -1,
-            "type": "manual"
-          },
-          {
-            "date": "2026-05-29",
-            "hours": -1,
-            "type": "manual"
-          },
-          {
-            "date": "2026-05-29",
-            "hours": 2,
-            "type": "absent"
           }
         ]
       },
