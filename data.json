@@ -15,6 +15,21 @@
             "date": "2026-05-29",
             "hours": 2,
             "type": "absent"
+          },
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-05-29",
+            "hours": -1,
+            "type": "manual"
+          },
+          {
+            "date": "2026-05-29",
+            "hours": -1,
+            "type": "manual"
           }
         ]
       },
@@ -168,5 +183,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "5/29 13:44"
+  "updated": "5/29 13:45"
 }
