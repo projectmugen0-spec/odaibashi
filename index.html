@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>単位・欠課管理 — 小台橋高校</title>
+<style>
+:root{
+  --bg:#f5f4f0;--sf:#fff;--s2:#f0efe9;
+  --bd:#e0ddd4;--bd2:#ccc9bc;
+  --tx:#1a1916;--tx2:#5a5748;--tx3:#9a9485;
+  --teal:#0e6550;--tl:#e0f4ee;--tb:#4dbf98;
+  --amb:#b87010;--al:#fdf0d8;--ab:#edab30;
+  --red:#a02828;--rl:#fcebeb;--rb:#e04040;
+  --blue:#155a9e;--bl:#e5f0fb;--bb:#70a8e0;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── sticky header ── */
+.sticky{position:sticky;top:0;z-index:100;background:var(--sf);border-bottom:1px solid var(--bd);padding:9px 14px}
+.sticky-inner{max-width:920px;margin:0 auto}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:8px}
+.prog-title{font-size:13px;font-weight:500;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.prog-nums{font-size:12px;color:var(--tx2);white-space:nowrap;flex-shrink:0}
+.prog-track{height:10px;background:var(--s2);border-radius:99px;border:1px solid var(--bd);overflow:hidden;position:relative}
+.prog-done{height:100%;background:var(--teal);border-radius:99px;position:absolute;left:0;top:0;transition:width .35s}
+.prog-pend{height:100%;background:var(--ab);opacity:.6;border-radius:99px;position:absolute;top:0;transition:all .35s}
+
+/* ── layout ── */
+.page{max-width:920px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── sync bar ── */
+.sync-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.sync-btn{padding:6px 13px;border-radius:var(--rs);border:1px solid var(--bd2);background:var(--sf);color:var(--tx2);font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap;transition:all .15s}
+.sync-btn:hover{border-color:var(--teal);color:var(--teal)}
+.sync-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.sync-btn.primary:hover{opacity:.85}
+.sync-status{font-size:11px;color:var(--tx3);flex:1}
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.sd-ok{background:var(--tb)}.sd-warn{background:var(--ab)}.sd-err{background:var(--rb)}.sd-idle{background:var(--bd2)}
+
+/* ── summary cards ── */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px}
+.c .lbl{font-size:10px;color:var(--tx3);margin-bottom:1px}
+.c .val{font-size:18px;font-weight:700;line-height:1.2}
+.c .sub{font-size:10px;color:var(--tx3);margin-top:1px}
+.c.teal .val{color:var(--teal)}.c.amb .val{color:var(--amb)}.c.red .val{color:var(--red)}.c.blue .val{color:var(--blue)}
+
+/* ── year tabs ── */
+.year-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.ytab{padding:5px 12px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--sf);cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);transition:all .15s;white-space:nowrap}
+.ytab:hover{border-color:var(--bd2);background:var(--s2)}
+.ytab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ytab-sub{font-size:10px;opacity:.75;margin-left:3px}
+
+/* ── day tabs ── */
+.day-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px}
+.dtab{padding:7px 4px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--sf);cursor:pointer;font-size:14px;font-weight:600;color:var(--tx2);transition:all .15s;text-align:center}
+.dtab:hover{border-color:var(--bd2);background:var(--s2)}
+.dtab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.dtab-sub{font-size:10px;display:block;opacity:.75;font-weight:400}
+.dtab-warn{color:#e04040;font-size:10px;display:block}
+
+.banner{background:var(--bl);border:1px solid var(--bb);border-radius:var(--rs);padding:7px 12px;font-size:12px;color:var(--blue);margin-bottom:12px}
+
+/* ── period ── */
+.period-group{margin-bottom:14px}
+.period-hdr{font-size:11px;font-weight:600;color:var(--tx3);padding:3px 10px;background:var(--s2);border-radius:var(--rs);display:inline-block;margin-bottom:6px}
+
+/* ── subject card ── */
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:11px 13px;margin-bottom:6px}
+.sc.done{border-color:var(--tb);background:var(--tl)}
+.sc.inprog{border-color:var(--ab);background:var(--al)}
+.sc.out{border-color:var(--rb)!important;background:var(--rl)!important}
+.sc-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.sc-name{font-size:14px;font-weight:600;flex:1;min-width:80px}
+.badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:99px;margin-left:4px;vertical-align:middle;white-space:nowrap}
+.b-req{background:var(--rl);color:var(--red);border:1px solid var(--rb)}
+.b-other{background:var(--bl);color:var(--blue);border:1px solid var(--bb)}
+.b-free{background:var(--s2);color:var(--tx3);border:1px solid var(--bd2)}
+.sc-ctrl{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.sc-stat{font-size:12px;border:1px solid var(--bd2);border-radius:var(--rs);padding:3px 7px;background:var(--sf);color:var(--tx);cursor:pointer}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:13px;padding:3px 6px;border-radius:4px;flex-shrink:0;white-space:nowrap}
+.icon-btn:hover{color:var(--tx);background:var(--s2)}
+
+/* ── absence section ── */
+.abs-wrap{border-top:1px solid var(--bd);padding-top:8px}
+.abs-info{font-size:11px;color:var(--tx3);margin-bottom:7px}
+.abs-btns{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px}
+.abs-counter{display:flex;align-items:center;gap:4px;background:var(--s2);border-radius:var(--rs);padding:4px 8px;flex-shrink:0}
+.ab-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--bd2);background:var(--sf);cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--tx2);flex-shrink:0;transition:all .12s;line-height:1}
+.ab-btn:hover{border-color:var(--teal);color:var(--teal)}
+.ab-ct{font-size:13px;font-weight:700;min-width:42px;text-align:center}
+.day-btn{border-radius:var(--rs);width:auto;padding:5px 11px;font-size:12px}
+.undo-btn{border-radius:var(--rs);width:auto;padding:5px 9px;font-size:12px;background:var(--s2)}
+
+/* progress bar — always visible */
+.abs-bar-row{display:flex;flex-direction:column;gap:5px}
+.abs-bar{height:8px;background:var(--sf);border-radius:99px;overflow:hidden;border:1px solid var(--bd)}
+.abs-fill{height:100%;border-radius:99px;transition:width .25s}
+.f-ok{background:var(--teal)}.f-warn{background:var(--ab)}.f-out{background:var(--rb)}
+.abs-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.abs-h{font-size:12px;color:var(--tx2)}
+.abs-d{font-size:13px;font-weight:700;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.d-ok{background:var(--tl);color:var(--teal)}.d-warn{background:var(--al);color:var(--amb)}.d-out{background:var(--rl);color:var(--red)}
+
+/* ── totals / empty ── */
+.day-total{font-size:12px;color:var(--tx3);text-align:right;padding:6px 0 0;border-top:1px solid var(--bd);margin-top:2px}
+.empty{font-size:13px;color:var(--tx3);padding:14px;text-align:center;border:1px dashed var(--bd2);border-radius:var(--r);margin-bottom:6px}
+
+/* ── add form ── */
+.add-form{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-top:16px}
+.add-form h3{font-size:13px;font-weight:500;color:var(--tx2);margin-bottom:9px}
+.fg{display:grid;grid-template-columns:1fr 58px 90px 90px 78px auto;gap:7px;align-items:end}
+.fg>div>label{font-size:11px;color:var(--tx3);display:block;margin-bottom:3px}
+.fg input,.fg select{width:100%;font-size:13px;padding:6px 8px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx)}
+.add-btn{padding:7px 13px;border-radius:var(--rs);border:none;background:var(--teal);color:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;align-self:end}
+.add-btn:hover{opacity:.85}
+.note{font-size:11px;color:var(--tx3);margin-top:9px;padding:8px 11px;background:var(--s2);border-radius:var(--rs);line-height:1.7}
+
+/* ── modals ── */
+dialog{border:none;border-radius:var(--r);padding:0;box-shadow:0 12px 48px rgba(0,0,0,.25);
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  margin:0;max-width:480px;width:92vw;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.modal-head{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.modal-head h3{font-size:14px;font-weight:600}
+.modal-close{background:none;border:none;cursor:pointer;font-size:20px;color:var(--tx3);padding:0 4px;line-height:1}
+.modal-body{overflow-y:auto;padding:14px 16px;flex:1}
+.modal-foot{padding:10px 16px;border-top:1px solid var(--bd);flex-shrink:0}
+
+/* history modal */
+.hist-empty{font-size:13px;color:var(--tx3);text-align:center;padding:20px}
+.hist-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;gap:8px}
+.hist-row:last-child{border-bottom:none}
+.hist-date{color:var(--tx2);white-space:nowrap}
+.hist-type{color:var(--tx3);font-size:11px}
+.hist-h{font-weight:700;white-space:nowrap}
+.hist-del{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:13px;padding:2px 6px;border-radius:4px;flex-shrink:0}
+.hist-del:hover{color:var(--red);background:var(--rl)}
+
+/* settings modal */
+.sg-row{margin-bottom:12px}
+.sg-row label{font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;font-weight:500}
+.sg-row input{width:100%;font-size:13px;padding:7px 10px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx)}
+.sg-note{font-size:11px;color:var(--tx3);margin-top:4px;line-height:1.5}
+.sg-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.sg-save{padding:7px 18px;border-radius:var(--rs);border:none;background:var(--teal);color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.sg-cancel{padding:7px 14px;border-radius:var(--rs);border:1px solid var(--bd2);background:var(--sf);color:var(--tx2);font-size:13px;cursor:pointer}
+
+/* ── legend ── */
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;padding:8px 11px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);font-size:11px;color:var(--tx3)}
+.legend span{display:flex;align-items:center;gap:4px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── mobile ── */
+@media(max-width:600px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .fg{grid-template-columns:1fr 1fr}
+  .fg>*:last-child{grid-column:1/-1}
+  .sc-top{flex-wrap:wrap}
+  .abs-btns{gap:5px}
+  .day-btn,.undo-btn{font-size:11px;padding:4px 8px}
+}
+</style>
+</head>
+<body>
+
+<!-- sticky progress -->
+<div class="sticky">
+  <div class="sticky-inner">
+    <div class="prog-row">
+      <span class="prog-title">📚 小台橋高校 単位・欠課管理</span>
+      <span class="prog-nums" id="pn">0 / 74単位</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-done" id="pd" style="width:0%"></div>
+      <div class="prog-pend" id="pp" style="width:0%;left:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- sync bar -->
+  <div class="sync-bar">
+    <button class="sync-btn" onclick="loadFromGH()">🔄 読み込む</button>
+    <button class="sync-btn primary" onclick="saveToGH()">☁ GitHubに保存</button>
+    <button class="sync-btn" onclick="openSettings()">⚙ GitHub設定</button>
+    <span class="sync-status" id="sync-status">
+      <span class="sync-dot sd-idle"></span>未設定
+    </span>
+  </div>
+
+  <!-- summary cards -->
+  <div class="cards" id="cards"></div>
+
+  <!-- year tabs -->
+  <div class="year-tabs" id="year-tabs"></div>
+
+  <!-- day tabs -->
+  <div class="day-tabs" id="day-tabs"></div>
+
+  <!-- banner -->
+  <div class="banner" id="banner"></div>
+
+  <!-- content -->
+  <div id="content"></div>
+
+  <!-- add form -->
+  <div class="add-form">
+    <h3>科目を追加</h3>
+    <div class="fg">
+      <div><label>科目名</label><input type="text" id="i-name" placeholder="例：歴史総合"></div>
+      <div><label>単位数</label><input type="number" id="i-units" value="2" min="1" max="8"></div>
+      <div><label>曜日・時限</label><select id="i-slot">
+        <option value="月|追加">月（3,4限 追加）</option>
+        <option value="月|56">月（5,6限）</option>
+        <option value="月|78">月（7,8限）</option>
+        <option value="火|56">火（5,6限）</option>
+        <option value="火|78">火（7,8限）</option>
+        <option value="水|56">水（5,6限）</option>
+        <option value="水|78">水（7,8限）</option>
+        <option value="木|56">木（5,6限）</option>
+        <option value="木|78">木（7,8限）</option>
+        <option value="金|56">金（5,6限）</option>
+        <option value="金|78">金（7,8限）</option>
+      </select></div>
+      <div><label>ステータス</label><select id="i-stat">
+        <option>履修中</option><option>未履修</option><option>取得済み</option>
+      </select></div>
+      <div><label>種別</label><select id="i-req">
+        <option>必履修</option><option>他部履修</option><option>選択</option>
+      </select></div>
+      <button class="add-btn" onclick="addSubj()">＋ 追加</button>
+    </div>
+    <div class="note">
+      📋 欠課上限（シラバスより）：1単位→12h ／ 2単位→24h ／ 4単位→47h　｜　年間実授業回数 約35回/曜日
+    </div>
+  </div>
+
+  <div class="legend" style="margin-top:12px">
+    <span><span class="dot" style="background:var(--teal)"></span>安全</span>
+    <span><span class="dot" style="background:var(--ab)"></span>注意（残り6日以下）</span>
+    <span><span class="dot" style="background:var(--rb)"></span>アウト</span>
+  </div>
+</div>
+
+<!-- history modal -->
+<dialog id="hist-modal">
+  <div class="modal-head">
+    <h3 id="hist-title">欠課履歴</h3>
+    <button class="modal-close" onclick="closeModal('hist-modal')">✕</button>
+  </div>
+  <div class="modal-body" id="hist-body"></div>
+  <div class="modal-foot" id="hist-foot" style="font-size:12px;color:var(--tx3)"></div>
+</dialog>
+
+<!-- settings modal -->
+<dialog id="settings-modal">
+  <div class="modal-head">
+    <h3>GitHub 設定</h3>
+    <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="sg-row">
+      <label>GitHubユーザー名</label>
+      <input type="text" id="sg-owner" placeholder="例：yamada_taro">
+      <div class="sg-note">GitHubアカウントのユーザー名</div>
+    </div>
+    <div class="sg-row">
+      <label>リポジトリ名</label>
+      <input type="text" id="sg-repo" placeholder="例：odaibashi" value="odaibashi">
+      <div class="sg-note">GitHub Pagesで公開しているリポジトリ名</div>
+    </div>
+    <div class="sg-row">
+      <label>ブランチ名</label>
+      <input type="text" id="sg-branch" placeholder="main" value="main">
+    </div>
+    <div class="sg-row">
+      <label>Personal Access Token（保存するときだけ必要）</label>
+      <input type="password" id="sg-token" placeholder="ghp_xxxxxxxxxxxxxxxx">
+      <div class="sg-note">
+        ⚠ この端末のみに保存されます。HTMLファイルには含まれません。<br>
+        GitHub → Settings → Developer settings → Fine-grained tokens で作成。<br>
+        権限：対象リポジトリの Contents: Read and write
+      </div>
+    </div>
+    <div class="sg-btns">
+      <button class="sg-cancel" onclick="closeModal('settings-modal')">キャンセル</button>
+      <button class="sg-save" onclick="saveSettings()">保存</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// ─── constants ───────────────────────────────
+const GRAD = 74;
+const DAYS = ['月','火','水','木','金'];
+const PERIODS = { '月':['追加','56','78'], '火':['56','78'], '水':['56','78'], '木':['56','78'], '金':['56','78'] };
+const PERIOD_LBL = { '追加':'3・4限（他部履修 追加枠）', '56':'5・6限（2部 前半）', '78':'7・8限（2部 後半）' };
+const YEAR_INFO = {
+  1:'1年次：2部（5〜8限）＋ 月曜3・4限に他部履修の追加授業',
+  2:'2年次：家庭基礎・体育B・保健Bが指定科目。選択科目が増えます。',
+  3:'3年次：ゼミナール3・フューチャーデザイニング3が始まります。',
+  4:'4年次：卒業最終年次。残り単位を確実に取得しましょう。'
+};
+
+// ─── absence limits ───────────────────────────
+function absLimit(u){ return u===1?12:u===2?24:u===4?47:Math.round(u*12); }
+function perDay(u){ return Math.min(u,2); }
+
+// ─── state ───────────────────────────────────
+let curYear=1, curDay='月', nextId=100;
+let subjs={ 1:[], 2:[], 3:[], 4:[] };
+
+const YEAR1_DEFAULTS=[
+  {name:'国語プラス',               units:2,day:'月',period:'追加',status:'履修中',req:'他部履修'},
+  {name:'数学Ⅰ',                   units:2,day:'月',period:'56',  status:'履修中',req:'必履修'},
+  {name:'現代の国語',               units:2,day:'月',period:'78',  status:'履修中',req:'必履修'},
+  {name:'体育Ａ',                   units:2,day:'火',period:'56',  status:'履修中',req:'必履修'},
+  {name:'音楽Ⅰ',                   units:2,day:'火',period:'78',  status:'履修中',req:'必履修'},
+  {name:'英語コミュニケーションⅠ', units:2,day:'水',period:'56',  status:'履修中',req:'必履修'},
+  {name:'公共',                     units:2,day:'水',period:'78',  status:'履修中',req:'必履修'},
+  {name:'科学と人間生活',           units:2,day:'木',period:'56',  status:'履修中',req:'必履修'},
+  {name:'情報Ⅰ',                   units:2,day:'木',period:'78',  status:'履修中',req:'必履修'},
+  {name:'保健Ａ',                   units:1,day:'金',period:'56',  status:'履修中',req:'必履修'},
+  {name:'産業社会と人間',           units:2,day:'金',period:'78',  status:'履修中',req:'必履修'},
+];
+
+// ─── storage ─────────────────────────────────
+const APP_KEY='oda_v7';
+const GH_KEY='oda_gh';
+
+function load(){
+  const raw=localStorage.getItem(APP_KEY);
+  if(raw){try{const d=JSON.parse(raw);subjs=d.s;curYear=d.y||1;curDay=d.d||'月';nextId=d.n||100;return;}catch(e){}}
+  subjs[1]=YEAR1_DEFAULTS.map((d,i)=>({...d,id:i+1,absences:0,history:[]}));
+  nextId=50;
+}
+function save(){
+  localStorage.setItem(APP_KEY,JSON.stringify({s:subjs,y:curYear,d:curDay,n:nextId}));
+}
+function getGH(){ try{return JSON.parse(localStorage.getItem(GH_KEY))||{};}catch(e){return{};} }
+function setGH(c){ localStorage.setItem(GH_KEY,JSON.stringify(c)); }
+
+// ─── GitHub sync ──────────────────────────────
+function setSyncStatus(dot,msg){
+  document.getElementById('sync-status').innerHTML=
+    `<span class="sync-dot ${dot}"></span>${msg}`;
+}
+
+async function loadFromGH(){
+  const c=getGH();
+  if(!c.owner||!c.repo){setSyncStatus('sd-err','設定が必要です（⚙ GitHub設定）');return;}
+  setSyncStatus('sd-idle','読み込み中…');
+  const url=`https://raw.githubusercontent.com/${c.owner}/${c.repo}/${c.branch||'main'}/data.json?t=${Date.now()}`;
+  try{
+    const r=await fetch(url);
+    if(!r.ok){setSyncStatus('sd-err',`data.jsonが見つかりません（${r.status}）`);return;}
+    const d=await r.json();
+    subjs=d.s||subjs;
+    nextId=d.n||nextId;
+    save();render();
+    setSyncStatus('sd-ok',`読み込み完了 ${nowStr()}`);
+  }catch(e){setSyncStatus('sd-err','読み込み失敗: '+e.message);}
+}
+
+async function saveToGH(){
+  const c=getGH();
+  if(!c.owner||!c.repo){openSettings();return;}
+  if(!c.token){alert('保存するにはPersonal Access Tokenが必要です。\n⚙ GitHub設定 から入力してください。');openSettings();return;}
+  setSyncStatus('sd-idle','GitHubに保存中…');
+  const jsonStr=JSON.stringify({s:subjs,n:nextId,updated:nowStr()},null,2);
+  const content=encodeBase64(jsonStr);
+  const apiUrl=`https://api.github.com/repos/${c.owner}/${c.repo}/contents/data.json`;
+  const headers={'Authorization':`Bearer ${c.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
+  let sha;
+  try{
+    const gr=await fetch(apiUrl,{headers});
+    if(gr.ok){const gd=await gr.json();sha=gd.sha;}
+  }catch(e){}
+  const body={message:`データを更新 ${nowStr()}`,content,...(sha?{sha}:{})};
+  try{
+    const pr=await fetch(apiUrl,{method:'PUT',headers,body:JSON.stringify(body)});
+    if(pr.ok){setSyncStatus('sd-ok',`保存完了 ${nowStr()}`);}
+    else{const ed=await pr.json();setSyncStatus('sd-err','保存失敗: '+(ed.message||pr.status));}
+  }catch(e){setSyncStatus('sd-err','ネットワークエラー: '+e.message);}
+}
+
+function encodeBase64(str){
+  const bytes=new TextEncoder().encode(str);
+  let bin='';
+  for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+// ─── settings modal ───────────────────────────
+function openSettings(){
+  const c=getGH();
+  document.getElementById('sg-owner').value=c.owner||'';
+  document.getElementById('sg-repo').value=c.repo||'odaibashi';
+  document.getElementById('sg-branch').value=c.branch||'main';
+  document.getElementById('sg-token').value=c.token||'';
+  document.getElementById('settings-modal').showModal();
+}
+function saveSettings(){
+  const c={
+    owner:document.getElementById('sg-owner').value.trim(),
+    repo:document.getElementById('sg-repo').value.trim()||'odaibashi',
+    branch:document.getElementById('sg-branch').value.trim()||'main',
+    token:document.getElementById('sg-token').value.trim()
+  };
+  setGH(c);
+  closeModal('settings-modal');
+  setSyncStatus(c.owner?'sd-ok':'sd-idle',c.owner?`設定済み (${c.owner}/${c.repo})`:'未設定');
+}
+
+// ─── render ──────────────────────────────────
+function allSubjs(){ return Object.values(subjs).flat(); }
+function globalStats(){
+  let done=0,prog=0,total=0;
+  for(const s of allSubjs()){
+    total+=s.units;
+    if(s.status==='取得済み') done+=s.units;
+    else if(s.status==='履修中') prog+=s.units;
+  }
+  return{done,prog,total,remain:Math.max(0,GRAD-done)};
+}
+
+function render(){
+  const gs=globalStats();
+  const pDone=Math.min(100,gs.done/GRAD*100);
+  const pProg=Math.min(100-pDone,gs.prog/GRAD*100);
+  document.getElementById('pd').style.width=pDone+'%';
+  document.getElementById('pp').style.width=pProg+'%';
+  document.getElementById('pp').style.left=pDone+'%';
+  document.getElementById('pn').textContent=`取得済み ${gs.done} / 74単位　履修中 ${gs.prog}単位`;
+
+  document.getElementById('cards').innerHTML=
+    mkc('取得済み',gs.done+'単位','修得確定','teal')+
+    mkc('履修中',gs.prog+'単位','見込み','amb')+
+    mkc('卒業まで',gs.remain+'単位','必要','red')+
+    mkc('全登録',gs.total+'単位','合計','blue');
+
+  document.getElementById('year-tabs').innerHTML=[1,2,3,4].map(y=>{
+    const ys=subjs[y]||[];
+    const yd=ys.reduce((a,s)=>a+(s.status==='取得済み'?s.units:0),0);
+    const yt=ys.reduce((a,s)=>a+s.units,0);
+    return`<button class="ytab${y===curYear?' active':''}" onclick="setYear(${y})">
+      ${y}年次<span class="ytab-sub">${yd}/${yt}</span></button>`;
+  }).join('');
+
+  const dayAll=subjs[curYear]||[];
+  document.getElementById('day-tabs').innerHTML=DAYS.map(d=>{
+    const ds=dayAll.filter(s=>s.day===d);
+    const dd=ds.reduce((a,s)=>a+(s.status==='取得済み'?s.units:0),0);
+    const dt=ds.reduce((a,s)=>a+s.units,0);
+    const out=ds.some(s=>s.absences>=absLimit(s.units));
+    return`<button class="dtab${d===curDay?' active':''}" onclick="setDay('${d}')">
+      ${d}<span class="dtab-sub">${dd}/${dt}</span>${out?'<span class="dtab-warn">⚠</span>':''}
+    </button>`;
+  }).join('');
+
+  document.getElementById('banner').textContent=YEAR_INFO[curYear];
+
+  const daySubjs=dayAll.filter(s=>s.day===curDay);
+  const periods=PERIODS[curDay]||['56','78'];
+  let html='';
+  for(const p of periods){
+    const ps=daySubjs.filter(s=>s.period===p);
+    html+=`<div class="period-group"><div class="period-hdr">${PERIOD_LBL[p]}</div>`;
+    if(!ps.length) html+='<div class="empty">科目なし</div>';
+    else ps.forEach(s=>{html+=renderSubj(s);});
+    html+='</div>';
+  }
+  const dDone=daySubjs.reduce((a,s)=>a+(s.status==='取得済み'?s.units:0),0);
+  const dProg=daySubjs.reduce((a,s)=>a+(s.status==='履修中'?s.units:0),0);
+  const dT=daySubjs.reduce((a,s)=>a+s.units,0);
+  html+=`<div class="day-total">${curDay}曜：取得済み ${dDone}単位 / 履修中 ${dProg}単位 / 計 ${dT}単位</div>`;
+  document.getElementById('content').innerHTML=html;
+  save();
+
+  // sync status from settings
+  const c=getGH();
+  if(c.owner && document.getElementById('sync-status').textContent.includes('未設定')){
+    setSyncStatus('sd-ok',`設定済み (${c.owner}/${c.repo})`);
+  }
+}
+
+function renderSubj(s){
+  const lim=absLimit(s.units);
+  const pd=perDay(s.units);
+  const abs=s.absences;
+  const remainH=lim-abs;
+  const remainD=Math.floor(Math.max(0,remainH)/pd);
+  const isOut=abs>=lim;
+  const isWarn=!isOut&&remainD<=6;
+  const pct=Math.min(100,Math.round(abs/lim*100));
+  const fc=isOut?'f-out':isWarn?'f-warn':'f-ok';
+  const scCls=isOut?'sc out':s.status==='取得済み'?'sc done':s.status==='履修中'?'sc inprog':'sc';
+  const bReq=s.req==='必履修'?`<span class="badge b-req">必履修</span>`
+    :s.req==='他部履修'?`<span class="badge b-other">他部履修</span>`
+    :`<span class="badge b-free">選択</span>`;
+  const statOpts=['未履修','履修中','取得済み'].map(v=>`<option${s.status===v?' selected':''}>${v}</option>`).join('');
+  const histCnt=(s.history||[]).length;
+
+  let hTxt,dTxt,dCls;
+  if(isOut){
+    hTxt=`欠課 ${abs}h / 上限${lim}h（${abs-lim}h超過）`;
+    dTxt='⚠ アウト';dCls='d-out';
+  }else{
+    hTxt=`欠課 ${abs}h / 上限${lim}h（残り${remainH}h）`;
+    dTxt=`あと${remainD}日でアウト`;
+    dCls=isWarn?'d-warn':'d-ok';
+  }
+
+  return`<div class="${scCls}">
+    <div class="sc-top">
+      <div class="sc-name">${s.name}${bReq}</div>
+      <div class="sc-ctrl">
+        <select class="sc-stat" onchange="chgStat(${s.id},this.value)">${statOpts}</select>
+        <button class="icon-btn" onclick="openHist(${s.id})">📋${histCnt?`<sup style="font-size:9px">${histCnt}</sup>`:''}</button>
+        <button class="icon-btn" onclick="delSubj(${s.id})">✕</button>
+      </div>
+    </div>
+    <div class="abs-wrap">
+      <div class="abs-info">${s.units}単位｜欠課上限 ${lim}h（1日休む = ${pd}h）</div>
+      <div class="abs-btns">
+        <div class="abs-counter">
+          <button class="ab-btn" onclick="manAdj(${s.id},-1)">−</button>
+          <span class="ab-ct">${abs}h</span>
+          <button class="ab-btn" onclick="manAdj(${s.id},1)">＋</button>
+        </div>
+        <button class="ab-btn day-btn" onclick="absent(${s.id})">📅 1日休む (+${pd}h)</button>
+        <button class="ab-btn undo-btn" onclick="undoAbs(${s.id})">↩ 取消</button>
+      </div>
+      <div class="abs-bar-row">
+        <div class="abs-bar"><div class="abs-fill ${fc}" style="width:${pct}%"></div></div>
+        <div class="abs-status">
+          <span class="abs-h">${hTxt}</span>
+          <span class="abs-d ${dCls}">${dTxt}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function mkc(l,v,s,t){return`<div class="c ${t}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>`;}
+
+// ─── actions ─────────────────────────────────
+function setYear(y){curYear=y;render();}
+function setDay(d){curDay=d;render();}
+function findS(id){return Object.values(subjs).flat().find(s=>s.id===id);}
+function chgStat(id,v){const s=findS(id);if(s){s.status=v;render();}}
+
+function absent(id){
+  const s=findS(id);if(!s)return;
+  const pd_=perDay(s.units);
+  s.absences+=pd_;
+  (s.history=s.history||[]).push({date:todayStr(),hours:pd_,type:'absent'});
+  render();
+}
+function undoAbs(id){
+  const s=findS(id);if(!s)return;
+  const h=s.history||[];
+  if(!h.length){return;}
+  const last=h[h.length-1];
+  s.absences=Math.max(0,s.absences-last.hours);
+  h.pop();render();
+}
+function manAdj(id,d){
+  const s=findS(id);if(!s)return;
+  s.absences=Math.max(0,s.absences+d);
+  (s.history=s.history||[]).push({date:todayStr(),hours:d,type:'manual'});
+  render();
+}
+function delSubj(id){
+  if(!confirm('削除しますか？'))return;
+  for(const y of Object.keys(subjs))subjs[y]=subjs[y].filter(s=>s.id!==id);
+  render();
+}
+function addSubj(){
+  const name=document.getElementById('i-name').value.trim();
+  if(!name){alert('科目名を入力してください');return;}
+  const units=parseInt(document.getElementById('i-units').value)||2;
+  const [day,period]=document.getElementById('i-slot').value.split('|');
+  const status=document.getElementById('i-stat').value;
+  const req=document.getElementById('i-req').value;
+  if(!subjs[curYear])subjs[curYear]=[];
+  subjs[curYear].push({id:nextId++,name,units,day,period,status,req,absences:0,history:[]});
+  document.getElementById('i-name').value='';
+  curDay=day;render();
+}
+
+// ─── history modal ────────────────────────────
+let histId=null;
+function openHist(id){
+  histId=id;
+  const s=findS(id);if(!s)return;
+  document.getElementById('hist-title').textContent=`欠課履歴 — ${s.name}`;
+  refreshHist();
+  document.getElementById('hist-modal').showModal();
+}
+function refreshHist(){
+  const s=findS(histId);if(!s)return;
+  const h=s.history||[];
+  const body=document.getElementById('hist-body');
+  if(!h.length){body.innerHTML='<div class="hist-empty">記録なし</div>';}
+  else{
+    body.innerHTML=h.slice().reverse().map((e,ri)=>{
+      const i=h.length-1-ri;
+      const lbl=e.type==='absent'?'1日休む':'手動';
+      const sgn=e.hours>0?'+':'';
+      return`<div class="hist-row">
+        <span class="hist-date">${e.date}</span>
+        <span class="hist-type">${lbl}</span>
+        <span class="hist-h">${sgn}${e.hours}h</span>
+        <button class="hist-del" onclick="delHist(${i})">✕</button>
+      </div>`;
+    }).join('');
+  }
+  const tot=h.reduce((a,e)=>a+e.hours,0);
+  document.getElementById('hist-foot').textContent=`合計 ${tot}時間（${h.length}件）`;
+}
+function delHist(i){
+  const s=findS(histId);if(!s)return;
+  s.absences=Math.max(0,s.absences-s.history[i].hours);
+  s.history.splice(i,1);
+  refreshHist();render();
+}
+
+// ─── modal helpers ────────────────────────────
+function closeModal(id){document.getElementById(id).close();}
+document.querySelectorAll('dialog').forEach(d=>{
+  d.addEventListener('click',e=>{if(e.target===d)d.close();});
+});
+
+// ─── utils ───────────────────────────────────
+function todayStr(){
+  const d=new Date();
+  return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function nowStr(){
+  const d=new Date();
+  return`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// ─── init ─────────────────────────────────────
+load();
+render();
+const ghc=getGH();
+if(ghc.owner) setSyncStatus('sd-ok',`設定済み (${ghc.owner}/${ghc.repo})`);
+else setSyncStatus('sd-idle','未設定 — ⚙ GitHub設定 からリポジトリを登録してください');
+</script>
+</body>
+</html>
