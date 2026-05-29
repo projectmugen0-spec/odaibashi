@@ -285,14 +285,14 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
       <input type="password" id="sg-token" placeholder="ghp_xxxxxxxxxxxxxxxx">
       <div class="sg-note">
         ⚠ この端末のみに保存されます。HTMLファイルには含まれません。<br>
-        GitHub → Settings → Developer settings → Fine-grained tokens で作成。<br>
-        権限：対象リポジトリの Contents: Read and write
+        Tokens (classic) → repo にチェック → Generate token
       </div>
     </div>
-    <div class="sg-btns">
-      <button class="sg-cancel" onclick="closeModal('settings-modal')">キャンセル</button>
-      <button class="sg-save" onclick="saveSettings()">保存</button>
-    </div>
+  </div>
+  <!-- ボタンをスクロール領域の外（固定フッター）に移動 -->
+  <div class="modal-foot" style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="sg-cancel" onclick="closeModal('settings-modal')">キャンセル</button>
+    <button class="sg-save" onclick="saveSettings()">保存</button>
   </div>
 </dialog>
 
