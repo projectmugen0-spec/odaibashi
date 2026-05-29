@@ -9,8 +9,19 @@
         "status": "履修中",
         "req": "他部履修",
         "id": 1,
-        "absences": 0,
-        "history": []
+        "absences": 4,
+        "history": [
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "数学Ⅰ",
@@ -20,8 +31,19 @@
         "status": "履修中",
         "req": "必履修",
         "id": 2,
-        "absences": 0,
-        "history": []
+        "absences": 4,
+        "history": [
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "現代の国語",
@@ -31,8 +53,19 @@
         "status": "履修中",
         "req": "必履修",
         "id": 3,
-        "absences": 0,
-        "history": []
+        "absences": 4,
+        "history": [
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "体育Ａ",
@@ -42,8 +75,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 4,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "音楽Ⅰ",
@@ -53,8 +92,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 5,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-05-29",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "英語コミュニケーションⅠ",
