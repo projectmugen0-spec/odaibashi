@@ -85,15 +85,10 @@
         "status": "履修中",
         "req": "必履修",
         "id": 4,
-        "absences": 4,
+        "absences": 2,
         "history": [
           {
             "date": "2026-05-29",
-            "hours": 2,
-            "type": "absent"
-          },
-          {
-            "date": "2026-06-02",
             "hours": 2,
             "type": "absent"
           }
