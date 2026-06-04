@@ -141,8 +141,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 8,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-06-04",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "情報Ⅰ",
@@ -152,8 +158,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 9,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-06-04",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "保健Ａ",
@@ -183,5 +195,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "6/2 13:06"
+  "updated": "6/4 12:48"
 }
