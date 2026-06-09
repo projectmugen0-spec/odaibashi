@@ -199,6 +199,7 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans
   <div class="sync-bar">
     <button class="sync-btn" onclick="loadFromGH()">🔄 最新に更新</button>
     <button class="sync-btn primary" onclick="saveToGH()">☁ GitHubに保存</button>
+    <button class="sync-btn" onclick="resetYear1()" style="border-color:var(--rb);color:var(--red)">↺ 出席票でリセット</button>
     <button class="sync-btn" onclick="openSettings()">⚙ 設定</button>
     <span class="sync-status" id="sync-status">
       <span class="sync-dot sd-idle"></span>読み込み中…
@@ -331,17 +332,29 @@ let curYear=1, curDay='月', nextId=100;
 let subjs={ 1:[], 2:[], 3:[], 4:[] };
 
 const YEAR1_DEFAULTS=[
-  {name:'国語プラス',               units:2,day:'月',period:'追加',status:'履修中',req:'他部履修'},
-  {name:'数学Ⅰ',                   units:2,day:'月',period:'56',  status:'履修中',req:'必履修'},
-  {name:'現代の国語',               units:2,day:'月',period:'78',  status:'履修中',req:'必履修'},
-  {name:'体育Ａ',                   units:2,day:'火',period:'56',  status:'履修中',req:'必履修'},
-  {name:'音楽Ⅰ',                   units:2,day:'火',period:'78',  status:'履修中',req:'必履修'},
-  {name:'英語コミュニケーションⅠ', units:2,day:'水',period:'56',  status:'履修中',req:'必履修'},
-  {name:'公共',                     units:2,day:'水',period:'78',  status:'履修中',req:'必履修'},
-  {name:'科学と人間生活',           units:2,day:'木',period:'56',  status:'履修中',req:'必履修'},
-  {name:'情報Ⅰ',                   units:2,day:'木',period:'78',  status:'履修中',req:'必履修'},
-  {name:'保健Ａ',                   units:1,day:'金',period:'56',  status:'履修中',req:'必履修'},
-  {name:'産業社会と人間',           units:2,day:'金',period:'78',  status:'履修中',req:'必履修'},
+  // 曜日・時限・欠課時数は2026/06/05付出席票より
+  {name:'歴史総合',               units:2,day:'月',period:'追加',status:'履修中',req:'他部履修',
+   absences:6, history:[{date:'2026-06-05',hours:6,type:'manual',note:'出席票より一括入力'}]},
+  {name:'英語コミュニケーションⅠ',units:2,day:'月',period:'56',  status:'履修中',req:'必履修',
+   absences:6, history:[{date:'2026-06-05',hours:6,type:'manual',note:'出席票より一括入力'}]},
+  {name:'情報Ⅰ',                  units:2,day:'月',period:'78',  status:'履修中',req:'必履修',
+   absences:4, history:[{date:'2026-06-05',hours:4,type:'manual',note:'出席票より一括入力'}]},
+  {name:'音楽Ⅰ',                  units:2,day:'火',period:'56',  status:'履修中',req:'必履修',
+   absences:2, history:[{date:'2026-06-05',hours:2,type:'manual',note:'出席票より一括入力'}]},
+  {name:'体育Ａ',                  units:2,day:'火',period:'78',  status:'履修中',req:'必履修',
+   absences:2, history:[{date:'2026-06-05',hours:2,type:'manual',note:'出席票より一括入力（遅早1回含まず）'}]},
+  {name:'現代の国語',              units:2,day:'水',period:'56',  status:'履修中',req:'必履修',
+   absences:0, history:[]},
+  {name:'数学Ⅰ',                  units:2,day:'水',period:'78',  status:'履修中',req:'必履修',
+   absences:0, history:[]},
+  {name:'科学と人間生活',          units:2,day:'木',period:'56',  status:'履修中',req:'必履修',
+   absences:2, history:[{date:'2026-06-05',hours:2,type:'manual',note:'出席票より一括入力'}]},
+  {name:'公共',                    units:2,day:'木',period:'78',  status:'履修中',req:'必履修',
+   absences:2, history:[{date:'2026-06-05',hours:2,type:'manual',note:'出席票より一括入力'}]},
+  {name:'保健Ａ',                  units:1,day:'金',period:'56',  status:'履修中',req:'必履修',
+   absences:0, history:[]},
+  {name:'産業社会と人間',          units:2,day:'金',period:'78',  status:'履修中',req:'必履修',
+   absences:0, history:[]},
 ];
 
 // ─── storage ─────────────────────────────────
@@ -351,7 +364,7 @@ const GH_KEY='oda_gh';
 function load(){
   const raw=localStorage.getItem(APP_KEY);
   if(raw){try{const d=JSON.parse(raw);subjs=d.s;curYear=d.y||1;curDay=d.d||'月';nextId=d.n||100;return;}catch(e){}}
-  subjs[1]=YEAR1_DEFAULTS.map((d,i)=>({...d,id:i+1,absences:0,history:[]}));
+  subjs[1]=YEAR1_DEFAULTS.map((d,i)=>({...d,id:i+1,absences:d.absences||0,history:d.history||[]}));
   nextId=50;
 }
 function save(){
@@ -600,6 +613,11 @@ function delSubj(id){
   for(const y of Object.keys(subjs))subjs[y]=subjs[y].filter(s=>s.id!==id);
   render();
 }
+function resetYear1(){
+  if(!confirm('1年次のデータを出席票（2026/06/05時点）の内容でリセットします。\n現在のデータは上書きされます。よろしいですか？')) return;
+  subjs[1]=YEAR1_DEFAULTS.map((d,i)=>({...d,id:nextId++,absences:d.absences||0,history:d.history?[...d.history.map(h=>({...h}))]:[] }));
+  curYear=1;curDay='月';render();
+}
 function addSubj(){
   const name=document.getElementById('i-name').value.trim();
   if(!name){alert('科目名を入力してください');return;}
@@ -630,7 +648,7 @@ function refreshHist(){
   else{
     body.innerHTML=h.slice().reverse().map((e,ri)=>{
       const i=h.length-1-ri;
-      const lbl=e.type==='absent'?'1日休む':'手動';
+      const lbl=e.note||( e.type==='absent'?'1日休む':'手動');
       const sgn=e.hours>0?'+':'';
       return`<div class="hist-row">
         <span class="hist-date">${e.date}</span>
