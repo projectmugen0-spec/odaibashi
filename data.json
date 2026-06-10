@@ -119,8 +119,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 6,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-06-10",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "公共",
@@ -195,5 +201,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "6/4 12:48"
+  "updated": "6/10 21:30"
 }
