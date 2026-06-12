@@ -147,10 +147,15 @@
         "status": "履修中",
         "req": "必履修",
         "id": 8,
-        "absences": 2,
+        "absences": 4,
         "history": [
           {
             "date": "2026-06-04",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-06-12",
             "hours": 2,
             "type": "absent"
           }
@@ -201,5 +206,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "6/10 21:30"
+  "updated": "6/12 10:13"
 }
