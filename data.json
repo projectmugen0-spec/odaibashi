@@ -150,6 +150,21 @@
             "date": "2026-06-10",
             "hours": 2,
             "type": "absent"
+          },
+          {
+            "date": "2026-06-19",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-06-19",
+            "hours": -1,
+            "type": "manual"
+          },
+          {
+            "date": "2026-06-19",
+            "hours": -1,
+            "type": "manual"
           }
         ]
       },
@@ -172,7 +187,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 8,
-        "absences": 4,
+        "absences": 6,
         "history": [
           {
             "date": "2026-06-04",
@@ -181,6 +196,11 @@
           },
           {
             "date": "2026-06-12",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-06-19",
             "hours": 2,
             "type": "absent"
           }
@@ -194,10 +214,15 @@
         "status": "履修中",
         "req": "必履修",
         "id": 9,
-        "absences": 2,
+        "absences": 4,
         "history": [
           {
             "date": "2026-06-04",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-06-19",
             "hours": 2,
             "type": "absent"
           }
@@ -211,8 +236,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 10,
-        "absences": 0,
-        "history": []
+        "absences": 1,
+        "history": [
+          {
+            "date": "2026-06-19",
+            "hours": 1,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "産業社会と人間",
@@ -222,8 +253,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 11,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-06-19",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       }
     ],
     "2": [],
@@ -231,5 +268,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "6/16 13:26"
+  "updated": "6/19 14:18"
 }
