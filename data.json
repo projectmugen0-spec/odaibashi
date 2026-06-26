@@ -169,7 +169,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 6,
-        "absences": 2,
+        "absences": 6,
         "history": [
           {
             "date": "2026-06-10",
@@ -182,14 +182,9 @@
             "type": "absent"
           },
           {
-            "date": "2026-06-19",
-            "hours": -1,
-            "type": "manual"
-          },
-          {
-            "date": "2026-06-19",
-            "hours": -1,
-            "type": "manual"
+            "date": "2026-06-26",
+            "hours": 2,
+            "type": "absent"
           }
         ]
       },
@@ -201,8 +196,14 @@
         "status": "履修中",
         "req": "必履修",
         "id": 7,
-        "absences": 0,
-        "history": []
+        "absences": 2,
+        "history": [
+          {
+            "date": "2026-06-26",
+            "hours": 2,
+            "type": "absent"
+          }
+        ]
       },
       {
         "name": "科学と人間生活",
@@ -212,7 +213,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 8,
-        "absences": 6,
+        "absences": 8,
         "history": [
           {
             "date": "2026-06-04",
@@ -228,6 +229,11 @@
             "date": "2026-06-19",
             "hours": 2,
             "type": "absent"
+          },
+          {
+            "date": "2026-06-26",
+            "hours": 2,
+            "type": "absent"
           }
         ]
       },
@@ -239,7 +245,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 9,
-        "absences": 4,
+        "absences": 6,
         "history": [
           {
             "date": "2026-06-04",
@@ -248,6 +254,11 @@
           },
           {
             "date": "2026-06-19",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-06-26",
             "hours": 2,
             "type": "absent"
           }
@@ -293,5 +304,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "6/23 16:50"
+  "updated": "6/26 10:34"
 }
