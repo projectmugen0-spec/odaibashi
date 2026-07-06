@@ -9,7 +9,7 @@
         "status": "履修中",
         "req": "他部履修",
         "id": 1,
-        "absences": 12,
+        "absences": 14,
         "history": [
           {
             "date": "2026-05-29",
@@ -38,6 +38,11 @@
           },
           {
             "date": "2026-06-30",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-07-06",
             "hours": 2,
             "type": "absent"
           }
@@ -329,5 +334,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "6/30 10:00"
+  "updated": "7/6 13:02"
 }
