@@ -189,7 +189,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 6,
-        "absences": 6,
+        "absences": 8,
         "history": [
           {
             "date": "2026-06-10",
@@ -205,6 +205,11 @@
             "date": "2026-06-26",
             "hours": 2,
             "type": "absent"
+          },
+          {
+            "date": "2026-07-08",
+            "hours": 2,
+            "type": "absent"
           }
         ]
       },
@@ -216,10 +221,15 @@
         "status": "履修中",
         "req": "必履修",
         "id": 7,
-        "absences": 2,
+        "absences": 4,
         "history": [
           {
             "date": "2026-06-26",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-07-08",
             "hours": 2,
             "type": "absent"
           }
@@ -334,5 +344,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "7/6 13:02"
+  "updated": "7/8 15:03"
 }
