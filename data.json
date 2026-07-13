@@ -9,7 +9,7 @@
         "status": "履修中",
         "req": "他部履修",
         "id": 1,
-        "absences": 14,
+        "absences": 16,
         "history": [
           {
             "date": "2026-05-29",
@@ -45,6 +45,11 @@
             "date": "2026-07-06",
             "hours": 2,
             "type": "absent"
+          },
+          {
+            "date": "2026-07-13",
+            "hours": 2,
+            "type": "absent"
           }
         ]
       },
@@ -56,7 +61,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 2,
-        "absences": 12,
+        "absences": 14,
         "history": [
           {
             "date": "2026-05-29",
@@ -87,6 +92,11 @@
             "date": "2026-06-30",
             "hours": 2,
             "type": "absent"
+          },
+          {
+            "date": "2026-07-13",
+            "hours": 2,
+            "type": "absent"
           }
         ]
       },
@@ -98,7 +108,7 @@
         "status": "履修中",
         "req": "必履修",
         "id": 3,
-        "absences": 10,
+        "absences": 12,
         "history": [
           {
             "date": "2026-05-29",
@@ -122,6 +132,11 @@
           },
           {
             "date": "2026-06-30",
+            "hours": 2,
+            "type": "absent"
+          },
+          {
+            "date": "2026-07-13",
             "hours": 2,
             "type": "absent"
           }
@@ -354,5 +369,5 @@
     "4": []
   },
   "n": 50,
-  "updated": "7/9 18:04"
+  "updated": "7/13 15:10"
 }
